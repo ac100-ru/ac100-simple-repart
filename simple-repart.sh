@@ -14,12 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-last_partition_8gb=2876677 
-last_partition_16gb=14628096 
-last_partition_size=0 # Detect later
+backup_last_partition_8gb=2876677 
+backup_last_partition_32gb=14628096 
+backup_last_partition_size=0 # Detect later
 
-config_8gb="android-8gb.cfg"
-config_16gb="android-32gb.cfg"
+config_8gb="android.cfg"
+config_32gb="android.cfg"
 config="none" # Detect later
 
 
@@ -30,37 +30,47 @@ function error {
 
 
 function backup {
-	sudo ./nvflash --bl bootloader.bin --rawdeviceread 0 1536 ac100-2.img --rawdeviceread 1536 256 ac100-3.img --rawdeviceread 1792 1024 ac100-4.img --rawdeviceread 2816 2560 ac100-5.img --rawdeviceread 5376 4096 ac100-6.img --rawdeviceread 9984 153600 ac100-8.img --rawdeviceread 163584 204800 ac100-9.img --rawdeviceread 368384 1024 ac100-10.img --rawdeviceread 369664 632320 ac100-12.img --rawdeviceread 1002240 ${last_partition_size} ac100-14.img --go
+	sudo ./nvflash --bl bootloader.bin --rawdeviceread 0 1536 ac100-2.img --rawdeviceread 1536 256 ac100-3.img --rawdeviceread 1792 1024 ac100-4.img --rawdeviceread 2816 2560 ac100-5.img --rawdeviceread 5376 4096 ac100-6.img --rawdeviceread 9984 153600 ac100-8.img --rawdeviceread 163584 204800 ac100-9.img --rawdeviceread 368384 1024 ac100-10.img --rawdeviceread 369664 632320 ac100-12.img --rawdeviceread 1002240 ${backup_last_partition_size} ac100-14.img --go
 	[[ $? == 0 ]] || error "Can't backup your ac100"
 }
 
 
 function create-bct {
 	echo "
-Press any key to continue to bct creation"
+Press any key to create bct"
 	read -n 1 any
 
-	dd if=ac100-2.img of=ac100.bct bs=4080 count=1 
+	dd if=ac100-2.img of=ac100.bct bs=4080 count=1
+	[[ $? == 0 ]] || error "Can't create bct"
 }
 
 
 function repart {
 	echo "
-Press any key to continue to repartition phase"
+Press any key to start repartition phase"
 	read -n 1 any
 
 	sudo ./nvflash -r --bct ac100.bct --setbct --configfile "${config}" --create --verifypart -1 --go
 	[[ $? == 0 ]] || error "Can't repart your ac100"
 }
 
+function need_reset {
+	echo "
+\e[00;31mAfter last operation you need to reset yout AC100 with power button to nvflash mode again\e[00m"
+}
+
+function bootloader {
+	sudo ./nvflash --bl bootloader.bin --go
+	[[ $? == 0 ]] || error "Can't load bootloader into ac100"
+}
 
 function restore {
 	echo "
-Press any key to continue to flash phase"
+Press any key to start flash phase"
 	read -n 1 any
 
 	sudo ./nvflash -r --rawdevicewrite 0 1536 ac100-2.img --rawdevicewrite 1536 256 ac100-3.img --rawdevicewrite 1792 1024 ac100-4.img --sync
-	[[ $? == 0 ]] || error "Can't restore your ac100"
+	[[ $? == 0 ]] || error "Can't flash your ac100"
 }
 
 
@@ -96,12 +106,12 @@ echo -e "\n"
 
 case $version in
 	"1")
-		last_partition_size="${last_partition_8gb}"
+		backup_last_partition_size="${backup_last_partition_8gb}"
 		config="${config_8gb}"
 	;;
 
 	"2")
-		last_partition_size="${last_partition_32gb}"
+		backup_last_partition_size="${backup_last_partition_32gb}"
 		config="${config_32gb}"
 	;;
 
@@ -114,6 +124,8 @@ esac
 backup
 create-bct
 repart
+need_reset
+bootloader
 restore
 
 echo "Repartition finished. Reboot to verify."
