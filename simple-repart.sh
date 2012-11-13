@@ -18,9 +18,23 @@ backup_last_partition_8gb=2876677
 backup_last_partition_32gb=14628096 
 backup_last_partition_size=0 # Detect later
 
+write_last_partition_8gb=1352192
+write_last_partition_32gb=13103616 
+write_last_partition_size=0 # Detect later
+
 config_8gb="android.cfg"
 config_32gb="android.cfg"
 config="none" # Detect later
+
+em1_img_8gb="EM1-8gb.gen"
+em1_img_32gb="EM1-32gb.gen"
+em2_img_8gb="EM2-8gb.gen"
+em2_img_32gb="EM2-32gb.gen"
+mbr_img_8gb="MBR-8gb.gen"
+mbr_img_32gb="MBR-32gb.gen"
+em1_img="none" # Detect later
+em2_img="none" # Detect later
+mbr_img="none" # Detect later
 
 
 function error {
@@ -69,7 +83,7 @@ function restore {
 Press any key to start flash phase"
 	read -n 1 any
 
-	sudo ./nvflash -r --rawdevicewrite 0 1536 ac100-2.img --rawdevicewrite 1536 256 ac100-3.img --rawdevicewrite 1792 1024 ac100-4.img --sync
+	sudo ./nvflash -r --rawdevicewrite 0 1536 ac100-2.img --rawdevicewrite 1536 256 ac100-3.img --rawdevicewrite 1792 1024 ac100-4.img --rawdevicewrite 2816 2560 ac100-5.img --rawdevicewrite 5376 4096 ac100-6.img --rawdevicewrite 9472 512 "${mbr_img}" --rawdevicewrite 9984 262400 ac100-8.img --rawdevicewrite 272384 204800 ac100-9.img --rawdevicewrite 477184 1024 ac100-10.img --rawdevicewrite 477184 256 "${em1_img}" --rawdevicewrite 478464 2048000 ac100-12.img --rawdevicewrite 2526464 256 "${em2_img}" --rawdevicewrite 2526720 1352192 ac100-14.img --sync
 	[[ $? == 0 ]] || error "Can't flash your ac100"
 }
 
@@ -107,12 +121,20 @@ echo -e "\n"
 case $version in
 	"1")
 		backup_last_partition_size="${backup_last_partition_8gb}"
+		write_last_partition_size="${write_last_partition_8gb}"
 		config="${config_8gb}"
+		em1_img="${em1_img_8gb}" 
+		em2_img="${em2_img_8gb}" 
+		mbr_img="${mbr_img_8gb}" 
 	;;
 
 	"2")
 		backup_last_partition_size="${backup_last_partition_32gb}"
+		write_last_partition_size="${write_last_partition_32gb}"
 		config="${config_32gb}"
+		em1_img="${em1_img_32gb}" 
+		em2_img="${em2_img_32gb}" 
+		mbr_img="${mbr_img_32gb}"
 	;;
 
 	*)
