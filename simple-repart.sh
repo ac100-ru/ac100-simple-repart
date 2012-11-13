@@ -14,10 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Variables
+# Number of sectors for last partition in stock partition setup
 backup_last_partition_8gb=2876677 
 backup_last_partition_32gb=14628096 
 backup_last_partition_size=0 # Detect later
 
+# Number of sectors for last partition in new android setup
 write_last_partition_8gb=1352192
 write_last_partition_32gb=13103616 
 write_last_partition_size=0 # Detect later
@@ -26,6 +29,7 @@ config_8gb="android.cfg"
 config_32gb="android.cfg"
 config="none" # Detect later
 
+# Pregenerated mbr table files for new android setup
 em1_img_8gb="EM1-8gb.gen"
 em1_img_32gb="EM1-32gb.gen"
 em2_img_8gb="EM2-8gb.gen"
@@ -37,18 +41,19 @@ em2_img="none" # Detect later
 mbr_img="none" # Detect later
 
 
+# Functions
 function error {
 	echo -e "\n\e[00;31m$1\e[00m\n"
 	exit 3
 }
 
-
+# Dump all partitions content to local disk
 function backup {
 	sudo ./nvflash --bl bootloader.bin --rawdeviceread 0 1536 ac100-2.img --rawdeviceread 1536 256 ac100-3.img --rawdeviceread 1792 1024 ac100-4.img --rawdeviceread 2816 2560 ac100-5.img --rawdeviceread 5376 4096 ac100-6.img --rawdeviceread 9984 153600 ac100-8.img --rawdeviceread 163584 204800 ac100-9.img --rawdeviceread 368384 1024 ac100-10.img --rawdeviceread 369664 632320 ac100-12.img --rawdeviceread 1002240 ${backup_last_partition_size} ac100-14.img --go
 	[[ $? == 0 ]] || error "Can't backup your ac100"
 }
 
-
+# Create bct file from first 4080 bytes of first image
 function create-bct {
 	echo "
 Press any key to create bct"
@@ -58,7 +63,7 @@ Press any key to create bct"
 	[[ $? == 0 ]] || error "Can't create bct"
 }
 
-
+# Change partition table with predefined config file
 function repart {
 	echo "
 Press any key to start repartition phase"
@@ -78,6 +83,7 @@ function bootloader {
 	[[ $? == 0 ]] || error "Can't load bootloader into ac100"
 }
 
+# Flash backup files from local files to device
 function restore {
 	echo "
 Press any key to start flash phase"
@@ -89,7 +95,6 @@ Press any key to start flash phase"
 
 
 # Main Script
-
 echo -e "\e[00;34m
 This script will: 
 1. backup your ac100 internal flash partitions to files
@@ -111,6 +116,7 @@ fi
 
 clear
 
+# Choose model by internal flash size
 echo "
 What flash size of your ac100:
 Press 1 if 8GB
@@ -143,6 +149,7 @@ case $version in
 	;;
 esac
 
+# Run functions
 backup
 create-bct
 repart
