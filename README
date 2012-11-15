@@ -1,0 +1,12 @@
+Toshiba ac100 simple-repart script
+
+Very simple script which automates backup, repart to new android table and restore of ac100 partitions.
+For now it only support stock partitions number and size for backup and new android table 
+for restore.
+
+Requirements:
+1. Working sudo
+2. Usb connection from desktop to ac100
+3. Free space for backup files
+
+home https://github.com/zombah/ac100-simple-repart
