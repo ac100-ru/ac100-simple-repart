@@ -116,7 +116,8 @@ This script will:
 \e[00m \e[00;31m
 REQUIREMENTS:
 1. working nvflash usb connection
-2. enough free space for backup files\e[00m
+2. enough free space for backup files
+3. working sudo\e[00m
 "
 echo "Are you ready to continue? Press y or n:"
 read -n 1 ready
