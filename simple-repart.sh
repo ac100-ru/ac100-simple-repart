@@ -85,7 +85,8 @@ function need_reset {
 }
 
 function bootloader {
-	echo "Start fastboot booloader..."
+	echo "Remember if you already started booloader you to restart ac100 to apx mode again. 
+	       Start fastboot booloader..."
 	sudo ./nvflash --bl bootloader.bin --go
 	[[ $? == 0 ]] || error "Can't load bootloader into ac100"
 }
