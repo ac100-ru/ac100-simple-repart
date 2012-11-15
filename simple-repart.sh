@@ -47,9 +47,14 @@ function error {
 	exit 3
 }
 
+function quit {
+	echo "Bye"
+	exit 4
+}
+
 # Dump all partitions content to local disk
 function backup {
-	sudo ./nvflash --bl bootloader.bin --rawdeviceread 0 1536 ac100-2.img --rawdeviceread 1536 256 ac100-3.img --rawdeviceread 1792 1024 ac100-4.img --rawdeviceread 2816 2560 ac100-5.img --rawdeviceread 5376 4096 ac100-6.img --rawdeviceread 9984 153600 ac100-8.img --rawdeviceread 163584 204800 ac100-9.img --rawdeviceread 368384 1024 ac100-10.img --rawdeviceread 369664 632320 ac100-12.img --go
+	sudo ./nvflash -r --rawdeviceread 0 1536 ac100-2.img --rawdeviceread 1536 256 ac100-3.img --rawdeviceread 1792 1024 ac100-4.img --rawdeviceread 2816 2560 ac100-5.img --rawdeviceread 5376 4096 ac100-6.img --rawdeviceread 9984 153600 ac100-8.img --rawdeviceread 163584 204800 ac100-9.img --rawdeviceread 368384 1024 ac100-10.img --rawdeviceread 369664 632320 ac100-12.img --go
 #--rawdeviceread 1002240 ${backup_last_partition_size} ac100-14.img --go
 	[[ $? == 0 ]] || error "Can't backup your ac100"
 }
@@ -80,8 +85,14 @@ function need_reset {
 }
 
 function bootloader {
+	echo "Start fastboot booloader..."
 	sudo ./nvflash --bl bootloader.bin --go
 	[[ $? == 0 ]] || error "Can't load bootloader into ac100"
+}
+
+function backup_part {
+	sudo ./nvflash -r --getpartitiontable backup_part_table-`date +%F_%T`.txt --go
+	[[ $? == 0 ]] || error "Can't create partition table backup"
 }
 
 # Flash backup files from local files to device
@@ -104,8 +115,8 @@ This script will:
 3. restore backup files back to ac100
 \e[00m \e[00;31m
 REQUIREMENTS:
-1. working nvflash connection
-2. enough free space to backup files\e[00m
+1. working nvflash usb connection
+2. enough free space for backup files\e[00m
 "
 echo "Are you ready to continue? Press y or n:"
 read -n 1 ready
@@ -116,7 +127,8 @@ if [ "$ready" == "n" ]; then
  exit 1
 fi
 
-clear
+# Disable clear screen for now to have full screen log
+#clear
 
 # Choose model by internal flash size
 echo "
@@ -155,36 +167,55 @@ esac
 echo "
 What to do:
 Press 1 for backup stock partition, then repart, then restore backup
-Press 2 for repart
-Press 3 for restore backup"
-read -n 1 version
+Press 2 for backup only
+Press 3 for repart only
+Press 4 for restore backup only"
+read -n 1 phase
 echo -e "\n"
 
 
 case $phase in
 	"1")	
-		# Run functions
+		# Run all functions
+		bootloader
+		backup_part
 		backup
 		create-bct
 		repart
 		need_reset
 		bootloader
 		restore
+		quit
 	;;
+
 	"2")
-		# Run functions
+		# Run backup functions
+		bootloader
+		backup_part
+		backup
+		create-bct
+		quit
+	;;
+
+
+	"3")
+		# Run repart functions
 		bootloader
 		repart
 		need_reset
+		quit
 	;;
-	"3")
-		# Run functions
+
+	"4")
+		# Run restore functions
 		bootloader
 		restore
+		quit
 	;;
+
 	*)
 		echo "Make right choice"
-		exit 3
+		exit 5
 	;;
 esac
 echo "Repartition finished. Reboot to verify."
