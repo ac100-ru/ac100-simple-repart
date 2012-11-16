@@ -49,7 +49,7 @@ function error {
 
 function quit {
 	echo "Bye"
-	exit 4
+	exit 0
 }
 
 # Dump all partitions content to local disk
