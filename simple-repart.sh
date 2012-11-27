@@ -30,12 +30,12 @@ config_32gb="android.cfg"
 config="none" # Detect later
 
 # Pregenerated mbr table files for new android setup
-em1_img_8gb="EM1-8gb.gen"
-em1_img_32gb="EM1-32gb.gen"
-em2_img_8gb="EM2-8gb.gen"
-em2_img_32gb="EM2-32gb.gen"
-mbr_img_8gb="MBR-8gb.gen"
-mbr_img_32gb="MBR-32gb.gen"
+em1_img_8gb="8gb-EM1.gen"
+em1_img_32gb="32gb-EM1.gen"
+em2_img_8gb="8gb-EM2.gen"
+em2_img_32gb="32gb-EM2.gen"
+mbr_img_8gb="8gb-MBR.gen"
+mbr_img_32gb="32gb-MBR.gen"
 em1_img="none" # Detect later
 em2_img="none" # Detect later
 mbr_img="none" # Detect later
@@ -48,7 +48,9 @@ function error {
 }
 
 function quit {
-	echo "Bye"
+	echo -e "\e[00;31m
+Bye
+\e[00m"
 	exit 0
 }
 
@@ -80,8 +82,9 @@ Press any key to start repartition phase"
 }
 
 function need_reset {
-	echo "
-\e[00;31mAfter last operation you need to reset yout AC100 with power button to nvflash mode again\e[00m"
+	echo -e "\e[00;31m
+After last operation you need to reset yout AC100 with power button to nvflash mode again
+\e[00m"
 }
 
 function bootloader {
@@ -102,8 +105,8 @@ function restore {
 Press any key to start flash phase"
 	read -n 1 any
 
-	sudo ./nvflash -r --rawdevicewrite 0 1536 ac100-2.img --rawdevicewrite 1536 256 ac100-3.img --rawdevicewrite 1792 1024 ac100-4.img --rawdevicewrite 2816 2560 ac100-5.img --rawdevicewrite 5376 4096 ac100-6.img --rawdevicewrite 9472 512 "${mbr_img}" --rawdevicewrite 9984 262400 ac100-8.img --rawdevicewrite 272384 204800 ac100-9.img --rawdevicewrite 477184 1024 ac100-10.img --rawdevicewrite 477184 256 "${em1_img}" --rawdevicewrite 478464 2048000 ac100-12.img --rawdevicewrite 2526464 256 "${em2_img}" --sync
-#--rawdevicewrite 252672 ${write_last_partition_size} ac100-14.img --sync
+	sudo ./nvflash -r --rawdevicewrite 0 1536 ac100-2.img --rawdevicewrite 1536 256 ac100-3.img --rawdevicewrite 1792 1024 ac100-4.img --rawdevicewrite 2816 2560 ac100-5.img --rawdevicewrite 5376 4096 ac100-6.img --rawdevicewrite 9472 512 "${mbr_img}" --rawdevicewrite 477184 256 "${em1_img}" --rawdevicewrite 2526464 256 "${em2_img}" --sync
+#--rawdevicewrite 9984 262400 ac100-8.img --rawdevicewrite 272384 204800 ac100-9.img --rawdevicewrite 477184 1024 ac100-10.img --rawdevicewrite 477184 256 "${em1_img}" --rawdevicewrite 478464 2048000 ac100-12.img --rawdevicewrite 2526464 256 "${em2_img}" --rawdevicewrite 252672 ${write_last_partition_size} ac100-14.img --sync
 	[[ $? == 0 ]] || error "Can't flash your ac100"
 }
 
