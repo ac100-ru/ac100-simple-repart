@@ -105,8 +105,8 @@ function restore {
 Press any key to start flash phase"
 	read -n 1 any
 
-	sudo ./nvflash -r --rawdevicewrite 0 1536 ac100-2.img --rawdevicewrite 1792 1024 ac100-4.img --rawdevicewrite 2816 2560 ac100-5.img --rawdevicewrite 5376 4096 ac100-6.img --rawdevicewrite 9472 512 "${mbr_img}" --rawdevicewrite 477184 256 "${em1_img}" --rawdevicewrite 2526464 256 "${em2_img}" --sync
-#--rawdevicewrite 1536 256 ac100-3.img --rawdevicewrite 9984 262400 ac100-8.img --rawdevicewrite 272384 204800 ac100-9.img --rawdevicewrite 477184 1024 ac100-10.img --rawdevicewrite 477184 256 "${em1_img}" --rawdevicewrite 478464 2048000 ac100-12.img --rawdevicewrite 2526464 256 "${em2_img}" --rawdevicewrite 252672 ${write_last_partition_size} ac100-14.img --sync
+	sudo ./nvflash -r --rawdevicewrite 0 1536 ac100-2.img --rawdevicewrite 1792 1024 ac100-4.img --rawdevicewrite 2816 2560 ac100-5.img --rawdevicewrite 5376 4096 ac100-6.img --rawdevicewrite 9472 512 "${mbr_img}" --rawdevicewrite 478208 256 "${em1_img}" --rawdevicewrite 2526464 256 "${em2_img}" --sync
+#--rawdevicewrite 1536 256 ac100-3.img --rawdevicewrite 9984 262400 ac100-8.img --rawdevicewrite 272384 204800 ac100-9.img --rawdevicewrite 477184 1024 ac100-10.img --rawdevicewrite 478208 256 "${em1_img}" --rawdevicewrite 478464 2048000 ac100-12.img --rawdevicewrite 2526464 256 "${em2_img}" --rawdevicewrite 252672 ${write_last_partition_size} ac100-14.img --sync
 	[[ $? == 0 ]] || error "Can't flash your ac100"
 }
 
