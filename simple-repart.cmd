@@ -168,7 +168,7 @@ echo.
 echo Starting repartition phase...
 pause
 
-win\nvflash.exe -r --bct ac100.bct --setbct --configfile "${config}" --create --verifypart -1 --go
+win\nvflash.exe -r --bct ac100.bct --setbct --configfile "%config%" --create --verifypart -1 --go
 if not %errorlevel%==0 ( call :error "Can't repart your ac100" & exit /b )
 goto :eof
 
