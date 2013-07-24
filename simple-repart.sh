@@ -16,7 +16,7 @@
 
 # Variables
 # Number of sectors for last partition in stock partition setup
-backup_last_partition_8gb=2876677 
+backup_last_partition_8gb=2876672 
 backup_last_partition_32gb=14628096 
 backup_last_partition_size=0 # Detect later
 

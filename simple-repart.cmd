@@ -16,7 +16,7 @@
 
 :: Variables
 :: Number of sectors for last partition in stock partition setup
-set "backup_last_partition_8gb=2876677" 
+set "backup_last_partition_8gb=2876672" 
 set "backup_last_partition_32gb=14628096" 
 set "backup_last_partition_size=0" REM Detect later
 
