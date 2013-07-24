@@ -17,24 +17,30 @@
 # Variables
 # Number of sectors for last partition in stock partition setup
 backup_last_partition_8gb=2876672 
+backup_last_partition_16gb=6836480 
 backup_last_partition_32gb=14628096 
 backup_last_partition_size=0 # Detect later
 
 # Number of sectors for last partition in new android setup
 write_last_partition_8gb=1352192
+write_last_partition_16gb=5312000
 write_last_partition_32gb=13103616 
 write_last_partition_size=0 # Detect later
 
 config_8gb="android.cfg"
+config_16gb="android.cfg"
 config_32gb="android.cfg"
 config="none" # Detect later
 
 # Pregenerated mbr table files for new android setup
 em1_img_8gb="8gb-EM1.gen"
+em1_img_16gb="16gb-EM1.gen"
 em1_img_32gb="32gb-EM1.gen"
 em2_img_8gb="8gb-EM2.gen"
+em2_img_16gb="16gb-EM2.gen"
 em2_img_32gb="32gb-EM2.gen"
 mbr_img_8gb="8gb-MBR.gen"
+mbr_img_16gb="16gb-MBR.gen"
 mbr_img_32gb="32gb-MBR.gen"
 em1_img="none" # Detect later
 em2_img="none" # Detect later
@@ -139,7 +145,8 @@ fi
 echo "
 What flash size of your ac100:
 Press 1 if 8GB
-Press 2 if 32GB"
+Press 2 if 16GB
+Press 3 if 32GB"
 read -n 1 version
 echo -e "\n"
 
@@ -154,6 +161,15 @@ case $version in
 	;;
 
 	"2")
+		backup_last_partition_size="${backup_last_partition_16gb}"
+		write_last_partition_size="${write_last_partition_16gb}"
+		config="${config_16gb}"
+		em1_img="${em1_img_16gb}" 
+		em2_img="${em2_img_16gb}" 
+		mbr_img="${mbr_img_16gb}" 
+	;;
+
+	"3")
 		backup_last_partition_size="${backup_last_partition_32gb}"
 		write_last_partition_size="${write_last_partition_32gb}"
 		config="${config_32gb}"

@@ -17,24 +17,30 @@
 :: Variables
 :: Number of sectors for last partition in stock partition setup
 set "backup_last_partition_8gb=2876672" 
+set "backup_last_partition_16gb=6836480"
 set "backup_last_partition_32gb=14628096" 
 set "backup_last_partition_size=0" REM Detect later
 
 :: Number of sectors for last partition in new android setup
 set "write_last_partition_8gb=1352192"
+set "write_last_partition_16gb=5312000"
 set "write_last_partition_32gb=13103616" 
 set "write_last_partition_size=0" REM Detect later
 
 set "config_8gb=android.cfg"
+set "config_16gb=android.cfg"
 set "config_32gb=android.cfg"
 set "config=none" REM Detect later
 
 :: Pregenerated mbr table files for new android setup
 set "em1_img_8gb=8gb-EM1.gen"
+set "em1_img_16gb=16gb-EM1.gen"
 set "em1_img_32gb=32gb-EM1.gen"
 set "em2_img_8gb=8gb-EM2.gen"
+set "em2_img_16gb=16gb-EM2.gen"
 set "em2_img_32gb=32gb-EM2.gen"
 set "mbr_img_8gb=8gb-MBR.gen"
+set "mbr_img_16gb=16gb-MBR.gen"
 set "mbr_img_32gb=32gb-MBR.gen"
 set "em1_img=none" REM Detect later
 set "em2_img=none" REM Detect later
@@ -62,7 +68,8 @@ if %errorlevel%==2 ( echo Come back then you are ready. & exit /b )
 echo.
 echo What flash size of your ac100:
 echo Press 1 if 8GB
-echo Press 2 if 32GB"
+echo Press 2 if 16GB
+echo Press 3 if 32GB"
 choice /c 12
 
 if %errorlevel%==1 (
@@ -75,6 +82,15 @@ set	mbr_img=%mbr_img_8gb%
 )
 
 if %errorlevel%==2 (
+set	backup_last_partition_size=%backup_last_partition_16gb%
+set	write_last_partition_size=%write_last_partition_16gb%
+set	config=%config_16gb%
+set	em1_img=%em1_img_16gb% 
+set	em2_img=%em2_img_16gb% 
+set	mbr_img=%mbr_img_16gb%
+)
+
+if %errorlevel%==3 (
 set	backup_last_partition_size=%backup_last_partition_32gb%
 set	write_last_partition_size=%write_last_partition_32gb%
 set	config=%config_32gb%
