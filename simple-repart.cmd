@@ -158,6 +158,7 @@ goto :eof
 echo.
 echo Bye!
 echo.
+pause
 goto :eof
 
 :: Dump all partitions content to local disk
