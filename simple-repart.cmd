@@ -70,7 +70,7 @@ echo What flash size of your ac100:
 echo Press 1 if 8GB
 echo Press 2 if 16GB
 echo Press 3 if 32GB"
-choice /c 12
+choice /c 123
 
 if %errorlevel%==1 (
 set	backup_last_partition_size=%backup_last_partition_8gb%
