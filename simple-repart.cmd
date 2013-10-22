@@ -156,62 +156,73 @@ goto :eof
 
 :quit
 echo.
-echo Bye!
+echo Done. Bye!
 echo.
 pause
 goto :eof
 
-:: Dump all partitions content to local disk
+
 :backup
+echo Dump all partitions content to local disk
 win\nvflash.exe -r --rawdeviceread 0 1536 ac100-2.img --rawdeviceread 1536 256 ac100-3.img --rawdeviceread 1792 1024 ac100-4.img --read 5 ac100-5.img --read 6 ac100-6.img --read 8 ac100-8.img --read 9 ac100-9.img --read 10 ac100-10.img --read 12 ac100-12.img --go
 ::win\nvflash.exe -r --rawdeviceread 0 1536 ac100-2.img --rawdeviceread 1536 256 ac100-3.img --rawdeviceread 1792 1024 ac100-4.img --rawdeviceread 2816 2560 ac100-5.img --rawdeviceread 5376 4096 ac100-6.img --rawdeviceread 9984 153600 ac100-8.img --rawdeviceread 163584 204800 ac100-9.img --rawdeviceread 368384 1024 ac100-10.img --rawdeviceread 369664 632320 ac100-12.img --go
 ::--rawdeviceread 1002240 ${backup_last_partition_size} ac100-14.img --go
 if not %errorlevel%==0 ( call :error "Can't backup your ac100" & exit /b )
 goto :eof
 
-:: Create bct file from first 4080 bytes of first image
-:create-bct 
+
+:create-bct
 echo.
-echo Creating bct...
-pause
+echo Create BCT file from first 4080 bytes of first image
 
 win\dd.exe if=ac100-2.img of=ac100.bct bs=4080 count=1
 if not %errorlevel%==0 ( call :error "Can't create bct" & exit /b )
 goto :eof
 
-:: Change partition table with predefined config file
-:repart 
+
+:repart
+echo.
+echo Change partition table with predefined config file
+goto :need_reset
+
 echo.
 echo Starting repartition phase...
-pause
-
 win\nvflash.exe -r --bct ac100.bct --setbct --configfile "%config%" --create --verifypart -1 --go
 if not %errorlevel%==0 ( call :error "Can't repart your ac100" & exit /b )
 goto :eof
 
-:need_reset 
-echo.
-echo After last operation you need to reset yout AC100 with power button to nvflash mode again
-echo.
+
+:need_reset
+echo Before continue, please, restart you device with pressed Ctrl + Esc buttins
+pause
 goto :eof
 
-:bootloader 
-echo Remember if you already started booloader you to restart ac100 to apx mode again. 
+
+:bootloader
+echo.
+echo Remember if you already started booloader you to restart ac100 to apx mode again.
+goto :need_reset
+
+echo.
 echo Start fastboot booloader...
 win\nvflash.exe --bl bootloader.bin --go
 if not %errorlevel%==0 ( call :error "Can't load bootloader into ac100" & exit /b )
 goto :eof
+
 
 :backup_part
 win\nvflash.exe -r --getpartitiontable backup_part_table-%Date%.txt --go
 if not %errorlevel%==0 ( call :error "Can't create partition table backup" & exit /b )
 goto :eof
 
-:: Flash backup files from local files to device
-:restore 
+
+:restore
+echo.
+echo Flash backups from local files to device
+pause
+
 echo.
 echo Starting flash phase...
-pause
 
 win\nvflash.exe -r --rawdevicewrite 0 1536 ac100-2.img --rawdevicewrite 1792 1024 ac100-4.img --rawdevicewrite 2816 2560 ac100-5.img --rawdevicewrite 5376 4096 ac100-6.img --rawdevicewrite 9472 512 "%mbr_img%" --rawdevicewrite 478208 256 "%em1_img%" --rawdevicewrite 2526464 256 "%em2_img%" --sync
 ::--rawdevicewrite 1536 256 ac100-3.img --rawdevicewrite 9984 262400 ac100-8.img --rawdevicewrite 272384 204800 ac100-9.img --rawdevicewrite 477184 1024 ac100-10.img --rawdevicewrite 478208 256 "${em1_img}" --rawdevicewrite 478464 2048000 ac100-12.img --rawdevicewrite 2526464 256 "${em2_img}" --rawdevicewrite 252672 ${write_last_partition_size} ac100-14.img --sync
